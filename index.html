@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>uncommon.txt</title>
+    <style>.card {border:1px solid; display:inline-block; padding:50px; margin:5px;}</style>
+</head>
+<body>
+    <div id="g"></div>
+<script>
+fetch('https://api.hiro.so/ordinals/v1/inscriptions?rarity=uncommon&mime_type=text/plain')
+.then(r => r.json())
+.then(d => {
+    let g = document.getElementById('g');
+    d.results.forEach(i => {
+        fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${i.id}/content`)
+        .then(r => r.text())
+        .then(c => {
+            let a = document.createElement('a');
+            a.className = 'card card-body';
+            a.href = `https://ordinals.com/inscription/${i.id}`;
+            a.target = "_blank";
+            a.style.textDecoration = 'none';
+            a.style.color = 'inherit';
+            a.innerHTML = `<p class="card-text">${c}</p>`;
+            g.appendChild(a);
+        });
+    });
+});
+</script>
+</body>
+</html>
