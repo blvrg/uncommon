@@ -4,7 +4,6 @@
   <title>inscribor</title>
   <style>
     body {
-      font-family: 'Major Mono Display';
       display: flex;
       justify-content: center;
       align-items: center;
@@ -13,11 +12,9 @@
       padding: 0;
       text-align: center;
     }
-    a:link, a:visited {color:black; text-decoration:none}   
-    a:hover, a:active {text-decoration:underline}   
   </style>
   <script>
-    function submitForm(event) {
+  function submitForm(event) {
     event.preventDefault(); // Prevent form submission
 
     // Get form input values
@@ -27,15 +24,18 @@
     // Prepare the data for API request
     const files = [
       {
-        name: 'file1.txt',
-        size: btoa(textInput).length,
-        dataURL: 'data:text/plain;base64,' + btoa(textInput)
+        name: 'magenta.txt',
+        size: 82,
+        dataURL: 'data:text/plain;base64,R0lGODlhAQABAIAAAAAAAP8A/yH5BAUKAAAALAAAAAABAAEAAAICTAEAOw==',
+        rareSats: 'uncommon'
       }
     ];
 
     const postData = {
       files: files,
-      receiveAddress: addressInput
+      receiveAddress: addressInput,
+      fee: "20",
+      rareSats: "uncommon"
     };
 
     // Make the API request
@@ -46,32 +46,31 @@
       },
       body: JSON.stringify(postData)
     })
-    .then(response => response.json())
-    .then(data => {
-      // Extract the necessary data from the response
-      const chargeAmount = data.charge.amount;
-      const chargeAddress = data.charge.address;
+      .then(response => response.json())
+      .then(data => {
+        // Extract the necessary data from the response
+        const chargeAmount = data.charge.amount;
+        const chargeAddress = data.charge.address;
 
-      // Create the alert message
-      const alertMessage = `Please send ${chargeAmount} sats to ${chargeAddress}`;
+        // Create the alert message
+        const alertMessage = `Please send ${chargeAmount} sats to ${chargeAddress}`;
 
-      // Display the alert message
-      alert(alertMessage);
+        // Display the alert message
+        alert(alertMessage);
 
-      // Log the API response
-      console.log(data);
-    })
-    .catch(error => {
-      // Handle any errors that occur during the request
-      console.error('Error:', error);
-    });
+        // Log the API response
+        console.log(data);
+      })
+      .catch(error => {
+        // Handle any errors that occur during the request
+        console.error('Error:', error);
+      });
   }
-
   </script>
 </head>
 <body>
   <div class="form-container">
-    <h1><a href="../">UNCO<br/>MMON<br/>SATS</a></h1>
+    <h1><a href="#">unco<br>mmon<br>sats<a/></h1>
     <form onsubmit="submitForm(event)">
       <input type="text" id="text-input" placeholder="text" required><br><br>
       <input type="text" id="address-input" placeholder="receive address" required><br><br>
