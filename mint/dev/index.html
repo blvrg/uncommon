@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>inscribor</title>
+  <title>uncommon</title>
   <style>
     body {
       display: flex;
@@ -18,24 +18,20 @@
     event.preventDefault(); // Prevent form submission
 
     // Get form input values
-    const textInput = document.getElementById('text-input').value;
-    const addressInput = document.getElementById('address-input').value;
+    const addressInput = document.getElementById('address').value;
 
     // Prepare the data for API request
     const files = [
       {
         name: 'magenta.txt',
         size: 82,
-        dataURL: 'data:text/plain;base64,R0lGODlhAQABAIAAAAAAAP8A/yH5BAUKAAAALAAAAAABAAEAAAICTAEAOw==',
-        rareSats: 'uncommon'
+        dataURL: 'data:text/plain;base64,R0lGODlhAQABAIAAAAAAAP8A/yH5BAUKAAAALAAAAAABAAEAAAICTAEAOw=='
       }
     ];
 
     const postData = {
       files: files,
-      receiveAddress: addressInput,
-      fee: "20",
-      rareSats: "uncommon"
+      receiveAddress: addressInput
     };
 
     // Make the API request
@@ -69,13 +65,9 @@
   </script>
 </head>
 <body>
-  <div class="form-container">
-    <h1><a href="#">unco<br>mmon<br>sats<a/></h1>
     <form onsubmit="submitForm(event)">
-      <input type="text" id="text-input" placeholder="text" required><br><br>
-      <input type="text" id="address-input" placeholder="receive address" required><br><br>
+      <input type="text" id="address" placeholder="receive address" required><br><br>
       <button type="submit">inscribe</button>
     </form>
-  </div>
 </body>
 </html>
