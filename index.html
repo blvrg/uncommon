@@ -5,11 +5,10 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
       body {text-align:center; font-family: 'Major Mono Display', monospace}
-      h1 {font-size:5rem}
+      h1 {font-size:4rem}
       a:link, a:visited {color:black; text-decoration:none}   
       a:hover, a:active {text-decoration:underline}      
       .card {display:inline-block; text-align:left}
-      pre {font-family: 'Major Mono Display', monospace}
     </style>
 </head>
 <body>
@@ -17,39 +16,119 @@
     <div id="grid"></div>
     <div id="loader">Loading...</div>
 <script>
-let offset = 0;
-let index = 1;
-const limit = 60;
+    let offset = 0;
+    let index = 1;
+    const limit = 60;
 
-const fetchData = () => {
-    let loader = document.getElementById('loader');
-    fetch(`https://api.hiro.so/ordinals/v1/inscriptions?rarity=uncommon&order=asc&limit=${limit}&offset=${offset}`)
-    .then(response => response.json())
-    .then(data => {
-        offset += limit;
-        const grid = document.getElementById('grid');
-        data.results.sort((a, b) => a.number - b.number).forEach((i) => {
-            let a = document.createElement('a');
-            a.className = 'card card-body';
-            a.href = `https://ordinals.com/inscription/${i.id}`;
-            a.target = "_blank";
-            a.style.textDecoration = 'none';
-            a.style.color = 'inherit';
-            a.innerHTML = `<pre class="card-text">${index++}. ${JSON.stringify(i, null, 2)}</pre>`;
-            grid.appendChild(a);
+    const fetchData = () => {
+        let loader = document.getElementById('loader');
+        fetch(`https://api.hiro.so/ordinals/v1/inscriptions?rarity=uncommon&order=asc&limit=${limit}&offset=${offset}`)
+        .then(response => response.json())
+        .then(data => {
+            offset += limit;
+            const grid = document.getElementById('grid');
+            data.results.sort((a, b) => a.number - b.number).forEach((i) => {
+                let a = document.createElement('a');
+                a.className = 'card card-body';
+                a.href = `https://ordinals.com/inscription/${i.id}`;
+                a.target = "_blank";
+                a.style.textDecoration = 'none';
+                a.style.color = 'inherit';
+
+                // Function to handle different content types
+                const handleContent = (type, element) => {
+                    fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${i.id}/content`)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        let url = URL.createObjectURL(blob);
+                        element.src = url;
+                        a.appendChild(element);
+                    });
+                };
+
+                // If the mime type indicates an image
+                if (i.mime_type.startsWith('image/')) {
+                    let img = document.createElement('img');
+                    img.width = 250;
+                    img.height = 250;
+                    handleContent(i.mime_type, img);
+                }
+                // If the mime type indicates plain text
+                else if (i.mime_type === 'text/plain') {
+                    fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${i.id}/content`)
+                    .then(response => response.text())
+                    .then(text => {
+                        let p = document.createElement('p');
+                        p.style.width = '250px';
+                        p.style.height = '250px';
+                        p.style.overflow = 'auto';
+                        p.textContent = text;
+                        a.appendChild(p);
+                    });
+                }
+                // If the mime type indicates HTML
+                else if (i.mime_type === 'text/html') {
+                    fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${i.id}/content`)
+                    .then(response => response.text())
+                    .then(html => {
+                        let iframe = document.createElement('iframe');
+                        iframe.style.width = '250px';
+                        iframe.style.height = '250px';
+                        iframe.srcdoc = html;
+                        a.appendChild(iframe);
+                    });
+                }
+                // If the mime type indicates audio
+                else if (i.mime_type.startsWith('audio/')) {
+                    let audio = document.createElement('audio');
+                    audio.controls = true;
+                    handleContent(i.mime_type, audio);
+                }
+                // If the mime type indicates video
+                else if (i.mime_type.startsWith('video/')) {
+                    let video = document.createElement('video');
+                    video.controls = true;
+                    video.width = 250;
+                    video.height = 250;
+                    handleContent(i.mime_type, video);
+                }
+                // If the mime type indicates a PDF
+                else if (i.mime_type === 'application/pdf') {
+                    let iframe = document.createElement('iframe');
+                    iframe.style.width = '250px';
+                    iframe.style.height = '250px';
+                    handleContent(i.mime_type, iframe);
+                }
+                // If the mime type indicates a JSON
+                else if (i.mime_type === 'application/json') {
+                    fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${i.id}/content`)
+                    .then(response => response.json())
+                    .then(json => {
+                        let p = document.createElement('p');
+                        p.style.width = '250px';
+                        p.style.height = '250px';
+                        p.style.overflow = 'auto';
+                        p.textContent = JSON.stringify(json, null, 2);
+                        a.appendChild(p);
+                    });
+                }
+
+                a.innerHTML += `<pre class="card-text">${index++}. ${JSON.stringify(i, null, 2)}</pre>`;
+                grid.appendChild(a);
+            });
+
+            // Check if there are more results to load
+            if (offset < data.total) {
+                fetchData();
+            } else {
+                loader.style.display = 'none';
+            }
         });
+    };
 
-        // Check if there are more results to load
-        if (offset < data.total) {
-            fetchData();
-        } else {
-            loader.style.display = 'none';
-        }
-    });
-};
-
-// Initial fetch
-fetchData();
+    // Initial fetch
+    fetchData();
 </script>
 </body>
 </html>
+    
