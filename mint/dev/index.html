@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>inscribor</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+  </style>
+  <script>
+    function submitForm(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get form input values
+    const textInput = document.getElementById('text-input').value;
+    const addressInput = document.getElementById('address-input').value;
+
+    // Prepare the data for API request
+    const files = [
+      {
+        name: 'file1.txt',
+        size: textInput.length,
+        dataURL: btoa(textInput)
+      }
+    ];
+
+    const postData = {
+      files: files,
+      receiveAddress: addressInput
+    };
+
+    // Make the API request
+    fetch('https://api2.ordinalsbot.com/order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(postData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Extract the necessary data from the response
+      const chargeAmount = data.charge.amount;
+      const chargeAddress = data.charge.address;
+
+      // Create the alert message
+      const alertMessage = `Please send ${chargeAmount} sats to ${chargeAddress}`;
+
+      // Display the alert message
+      alert(alertMessage);
+
+      // Log the API response
+      console.log(data);
+    })
+    .catch(error => {
+      // Handle any errors that occur during the request
+      console.error('Error:', error);
+    });
+  }
+
+  </script>
+</head>
+<body>
+  <div class="form-container">
+
+    <form onsubmit="submitForm(event)">
+      <input type="text" id="text-input" placeholder="text" required><br><br>
+      <input type="text" id="address-input" placeholder="receive address" required><br><br>
+      <button type="submit">inscribe</button>
+    </form>
+  </div>
+</body>
+</html>
