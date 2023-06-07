@@ -25,43 +25,37 @@
       {
         name: 'magenta.txt',
         size: 82,
-        dataURL: 'data:text/plain;base64,R0lGODlhAQABAIAAAAAAAP8A/yH5BAUKAAAALAAAAAABAAEAAAICTAEAOw=='
+        dataURL: 'data:text/plain;base64,R0lGODlhAQABAIAAAAAAAP8A/yH5BAUKAAAALAAAAAABAAEAAAICTAEAOw==',
+        rareSats: 'uncommon'
       }
     ];
 
     const postData = {
       files: files,
-      receiveAddress: addressInput
+      receiveAddress: addressInput,
+      fee: "20",
+      rareSats: "uncommon"
+    };
+
+    // Create headers
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    // Prepare the fetch options
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify(postData),
+      redirect: 'follow'
     };
 
     // Make the API request
-    fetch('https://api2.ordinalsbot.com/order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(postData)
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Extract the necessary data from the response
-        const chargeAmount = data.charge.amount;
-        const chargeAddress = data.charge.address;
-
-        // Create the alert message
-        const alertMessage = `Please send ${chargeAmount} sats to ${chargeAddress}`;
-
-        // Display the alert message
-        alert(alertMessage);
-
-        // Log the API response
-        console.log(data);
-      })
-      .catch(error => {
-        // Handle any errors that occur during the request
-        console.error('Error:', error);
-      });
+    fetch('https://api2.ordinalsbot.com/order', requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
   }
+
   </script>
 </head>
 <body>
