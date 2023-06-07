@@ -1,31 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>uncommon.txt</title>
-    <style>.card {border:1px solid; display:inline-block; padding:50px; margin:5px;}</style>
+    <title>Uncommon Sats</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+      body {text-align:center}
+      .card {display:inline-block; text-align:left}
+      pre {font-family: 'Major Mono Display', monospace}
+    </style>
 </head>
 <body>
-    <div id="g"></div>
+    <div id="grid"></div>
+    <div id="loader">Loading...</div>
 <script>
-fetch('https://api.hiro.so/ordinals/v1/inscriptions?rarity=uncommon&mime_type=text/plain')
-.then(r => r.json())
-.then(d => {
-    let g = document.getElementById('g');
-    d.results.forEach(i => {
-        fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${i.id}/content`)
-        .then(r => r.text())
-        .then(c => {
+let offset = 0;
+let index = 1;
+const limit = 60;
+
+const fetchData = () => {
+    let loader = document.getElementById('loader');
+    fetch(`https://api.hiro.so/ordinals/v1/inscriptions?rarity=uncommon&order=asc&limit=${limit}&offset=${offset}`)
+    .then(response => response.json())
+    .then(data => {
+        offset += limit;
+        const grid = document.getElementById('grid');
+        data.results.sort((a, b) => a.number - b.number).forEach((i) => {
             let a = document.createElement('a');
             a.className = 'card card-body';
             a.href = `https://ordinals.com/inscription/${i.id}`;
             a.target = "_blank";
             a.style.textDecoration = 'none';
             a.style.color = 'inherit';
-            a.innerHTML = `<p class="card-text">${c}</p>`;
-            g.appendChild(a);
+            a.innerHTML = `<pre class="card-text">${index++}. ${JSON.stringify(i, null, 2)}</pre>`;
+            grid.appendChild(a);
         });
+
+        // Check if there are more results to load
+        if (offset < data.total) {
+            fetchData();
+        } else {
+            loader.style.display = 'none';
+        }
     });
-});
+};
+
+// Initial fetch
+fetchData();
 </script>
 </body>
 </html>
