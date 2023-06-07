@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>inscribor</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+  </style>
+  <script>
+    function submitForm(event) {
+      event.preventDefault(); // Prevent form submission
+
+      // Get form input values
+      const textInput = document.getElementById('text-input').value;
+      const addressInput = document.getElementById('address-input').value;
+      const feeInput = document.getElementById('fee-input').value;
+
+      // Prepare the data for API request
+      const postData = {
+        texts: [textInput],
+        receiveAddress: addressInput,
+        fee: parseInt(feeInput),
+        referral: "your_referral_code"
+      };
+
+      // Make the API request
+      fetch('https://ordinalsbot.com/api/textorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Extract the necessary data from the response
+        const chargeAmount = data.charge.amount;
+        const chargeAddress = data.charge.address;
+        const fiatValue = data.charge.fiat_value;
+
+        // Create the alert message
+        const alertMessage = `Please send ${chargeAmount} sats (${fiatValue} USD) to ${chargeAddress}`;
+
+        // Display the alert message
+        alert(alertMessage);
+
+        // Log the API response
+        console.log(data);
+      })
+      .catch(error => {
+        // Handle any errors that occur during the request
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="form-container">
+
+    <form onsubmit="submitForm(event)">
+      <input type="text" id="text-input" placeholder="text" required><br><br>
+      <input type="text" id="address-input" placeholder="receive address" required><br><br>
+      <input type="number" id="fee-input" placeholder="fee rate" required><br><br>
+
+      <button type="submit">inscribe</button>
+    </form>
+  </div>
+</body>
+</html>
