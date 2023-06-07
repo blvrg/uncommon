@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>inscribor</title>
+  <title>uncommon</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
     body {
@@ -14,7 +14,10 @@
       padding: 0;
       text-align: center;
     }
-    h1 {font-size:3rem}
+    h1 {font-size:3rem; margin:14px 0}
+    a:link, a:visited {color:black; text-decoration:none}
+    a:hover, a:active {text-decoration:underline}
+    input {width:133px}
     button {
         font-family: 'Major Mono Display';
         background: black;
@@ -31,58 +34,53 @@
       event.preventDefault(); // Prevent form submission
 
       // Get form input values
-      const textInput = document.getElementById('text-input').value;
-      const addressInput = document.getElementById('address-input').value;
-      const feeInput = document.getElementById('fee-input').value;
+      const addressInput = document.getElementById('address').value;
+      const fileContentInput = document.getElementById('text').value;
+      const feeRateInput = document.getElementById('fee-rate').value;
 
       // Prepare the data for API request
+      const files = [
+        {
+          name: 'text.txt',
+          size: btoa(fileContentInput).length,
+          dataURL: 'data:text/plain;base64,' + btoa(fileContentInput),
+        }
+      ];
+
       const postData = {
-        texts: [textInput],
+        files: files,
         receiveAddress: addressInput,
-        fee: parseInt(feeInput),
-        referral: "your_referral_code"
+        fee: feeRateInput,
+        rareSats: 'uncommon'
+      };
+
+      // Create headers
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+
+      // Prepare the fetch options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: JSON.stringify(postData),
+        redirect: 'follow'
       };
 
       // Make the API request
-      fetch('https://ordinalsbot.com/api/textorder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(postData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        // Extract the necessary data from the response
-        const chargeAmount = data.charge.amount;
-        const chargeAddress = data.charge.address;
-        const fiatValue = data.charge.fiat_value;
-
-        // Create the alert message
-        const alertMessage = `Please send ${chargeAmount} sats (${fiatValue} USD) to ${chargeAddress}`;
-
-        // Display the alert message
-        alert(alertMessage);
-
-        // Log the API response
-        console.log(data);
-      })
-      .catch(error => {
-        // Handle any errors that occur during the request
-        console.error('Error:', error);
-      });
+      fetch('https://cors.23byt.es/https://api2.ordinalsbot.com/order', requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
     }
   </script>
 </head>
 <body>
-  <div class="form-container">
-    <h1>UNCO<br/>MMON<br/>SATS</h1>
-    <form onsubmit="submitForm(event)">
-      <input type="text" id="text-input" placeholder="text" required><br><br>
-      <input type="text" id="address-input" placeholder="receive address" required><br><br>
-      <input type="number" id="fee-input" placeholder="fee rate" required><br><br>
-      <button type="submit">inscribe</button>
-    </form>
-  </div>
+  <form onsubmit="submitForm(event)">
+    <h1><a href="./">UNCO<br/>MMON<br/>SATS</a></h1>
+    <input type="text" id="address" placeholder="Receive address" required><br><br>
+    <input type="text" id="text" placeholder="Text to inscribe" required><br><br>
+    <input type="number" id="fee-rate" placeholder="Fee rate" required><br><br>
+    <button type="submit">inscribe</button>
+  </form>
 </body>
 </html>
