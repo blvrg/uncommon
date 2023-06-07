@@ -12,6 +12,8 @@
       padding: 0;
       text-align: center;
     }
+    a:link, a:visited {color:black; text-decoration:none}   
+    a:hover, a:active {text-decoration:underline}   
   </style>
   <script>
     function submitForm(event) {
@@ -25,8 +27,8 @@
     const files = [
       {
         name: 'file1.txt',
-        size: textInput.length,
-        dataURL: btoa(textInput)
+        size: btoa(textInput).length,
+        dataURL: 'data:text/plain;base64,' + btoa(textInput)
       }
     ];
 
@@ -68,7 +70,7 @@
 </head>
 <body>
   <div class="form-container">
-
+    <h1><a href="../">UNCO<br/>MMON<br/>SATS</a></h1>
     <form onsubmit="submitForm(event)">
       <input type="text" id="text-input" placeholder="text" required><br><br>
       <input type="text" id="address-input" placeholder="receive address" required><br><br>
