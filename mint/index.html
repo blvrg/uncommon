@@ -14,6 +14,17 @@
       padding: 0;
       text-align: center;
     }
+    h1 {font-size:3rem}
+    button {
+        font-family: 'Major Mono Display';
+        background: black;
+        border: 0;
+        color: white;
+        font-size: 1.25rem;
+        padding: 11px;
+        cursor: pointer;
+    }
+    button:hover {text-decoration:underline}
   </style>
   <script>
     function submitForm(event) {
@@ -65,12 +76,11 @@
 </head>
 <body>
   <div class="form-container">
-    <h1>UNCMMN</h1>
+    <h1>UNCO<br/>MMON<br/>SATS</h1>
     <form onsubmit="submitForm(event)">
       <input type="text" id="text-input" placeholder="text" required><br><br>
       <input type="text" id="address-input" placeholder="receive address" required><br><br>
       <input type="number" id="fee-input" placeholder="fee rate" required><br><br>
-
       <button type="submit">inscribe</button>
     </form>
   </div>
